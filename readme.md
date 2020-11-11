@@ -1,1 +1,1 @@
-# exorcixer.ch gems 💎
+# exorciser.ch gems 💎
