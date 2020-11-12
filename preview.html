@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+<head>
+
+<meta charset="utf-8">
+<title>admin/preview - gem.exorciser.ch </title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+	body {
+		font-family: verdana;
+		font-size: 90%;
+	} 
+	dt {
+		font-weight: bold; 
+		font-size: 100%;
+		margin: .5ex;
+		padding: .5ex 0;
+	}
+</style>
+<script type='module'>
+import m from '/vendor/mithril.js'
+import b from '/vendor/bss.js'
+import {} from "https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js";
+
+
+const aceHandle = (c) => new Promise( (resolve, reject ) =>
+	setInterval( () => ace && (clearInterval(c), resolve(ace)), 10));
+	
+const store = m.stream({})
+const query = m.stream({})
+const info = m.stream({})
+const context = m.stream({})
+
+const gem = { store, query, info, context }; 
+ 
+const message = m.stream() 
+message.map(m.redraw)
+
+let url 
+
+const debug = (...args) => true && console.log('preview.html', ...args)
+
+window.addEventListener("message", async ({data}) => {
+	if (typeof data!= 'string') return 
+	//debug('message', data)
+	data = data.replace(/(import(.|\n|\r)*?from ['"])\//umg, `$1${window.location.origin}/`);
+	
+	const src = 'data:text/javascript;charset=utf-8,' + encodeURIComponent(data) 
+	const blob = new Blob([data], {type : 'text/javascript'});
+	URL.revokeObjectURL(url)	
+	url = URL.createObjectURL(blob)
+	try {
+		let app = (await import(url)).default
+		m.mount(host, app(gem))
+		message('')
+	} catch (e) { 		
+		console.warn('app mounting failed', e)
+		message(e)
+	} m.redraw();
+})
+
+
+let spacer =  m('span'+b`width 1em`, ' ')
+
+m.mount(msg, {
+	view: () => m('div'+b`border-top: 1px solid silver`,
+		message() && m('pre'+b`bc #fee;c red;white-space:pre-wrap`, message().message)
+	)
+})
+let invalidJSON
+m.mount(config, {
+	view: () =>  m('dl'+b`fs 80%`,
+		m('dt', 'Query', spacer, m('button', { onclick: () => query({})}, 'reset')),
+		m('dd'+b`d flex; fd column`, m('textarea', {
+			oncreate: ({dom}) => aceHandle().then( a => {
+				a.config.set('basePath', 'https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/');
+				const editor = a.edit(dom, { mode: "ace/mode/json", maxLines: 20, wrap: true,});
+				editor.setValue(JSON.stringify(query(), null, '\t')),
+				editor.on('change', () => {
+					invalidJSON = false
+					try {
+						query( JSON.parse(editor.getValue()))
+					} catch (e) {
+						console.warn(e)
+						invalidJSON = e.message
+					} m.redraw();
+				});
+				query.map(q => {
+					const a = JSON.stringify(q)
+					const b = JSON.stringify(JSON.parse(editor.getValue()||'null'))
+					if (a != b) {
+						editor.setValue(JSON.stringify(q, null, '\t'))
+					}
+				})
+			}),
+			
+		})
+		), invalidJSON && m('dd', m('tt'+b`bc #fee;c red`, invalidJSON)),
+		m('dt', 'Store', spacer, m('button', { onclick: () => store(undefined)}, 'reset')),
+		m('dd', m('pre'+b`bc #eee`, JSON.stringify(store(), null, '  ') || 'undefined')),
+		m('dt', 'Info'),
+		m('dd', m('pre'+b`bc #eee`, JSON.stringify(info(), null, '  ') || 'undefined')),
+		
+	)
+})
+
+</script>
+
+<body>
+	<div id='host'>mounting app ...</div>
+	<div id='msg'>mounting msg ...</div>
+	<div id='config'>mounting conf ...</div>
+</body>
+</html>
