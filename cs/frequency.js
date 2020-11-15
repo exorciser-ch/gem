@@ -60,7 +60,6 @@ const app = ({query, store, info}) => {
 			}), ' lowercase ', ),
 
 		m('span'+b`p 0 .5ex;`, ' ' ),
-		//m(`span`+b`p 0 0.5ex; bc goldenrod; c white; br 0.5ex; cursor: pointer`, {
     m('button', {
       disabled: store()?.text == undefined || store()?.text == query()?.text,
 			onclick: () => {
