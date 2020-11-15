@@ -93,7 +93,7 @@ const index = {
     }),
     runtime.jsonerror ? m('pre'+b`c red; bc #fdd`, runtime.jsonerror) : [
       m('h5', 'dokuwiki embed code [query only]'),
-      m('pre', `{{gem/${hs.get()?.a}?0=${encode(wrapper?.query)}}}`),
+      m('pre'+b`overflow auto`, `{{gem/${hs.get()?.a}?0=${encode(wrapper?.query)}}}`),
       m('h5', 'json'),
       m('pre'+b`overflow: auto`,
         stringify(hs.get(),null, '  ')
