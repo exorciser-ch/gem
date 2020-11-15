@@ -8,7 +8,6 @@ const limit = 5000;
 
 export const plain = ({query, store, info}) => {
 
-	console.log('chk auto deploy 3')
 	// is reset enabled?
 	const enabled = () => store() && query() && store().text != query().text;
 
