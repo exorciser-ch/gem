@@ -17,8 +17,11 @@ hs.on = () => {
     hs.put({a: self.location.hash.slice(1)})
   }
   wrapper.store = hs.get()?.s
-  wrapper.query = parse(hs.get()?.q)
-  //runtime.query = stringify(hs.get()?.q, null, '  ')
+  try {
+    wrapper.query = parse(hs.get()?.q)
+  } catch (ex) {
+    warn(ex.message)
+  }
 }
 
 const index = {
@@ -35,6 +38,11 @@ const index = {
       oncreate({dom}) {
         wrapper = dom
         wrapper.store = hs.get()?.s
+        try {
+          wrapper.query = parse(hs.get()?.q)
+        } catch (ex) {
+          warn(ex.message)
+        }
       },
       onchange: ({target}) => {
         if (target.tagName!='GEM-WRAPPER') return
@@ -58,14 +66,10 @@ const index = {
       },
     }),
     runtime.jsonerror ? m('pre'+b`c red; bc #fdd`, runtime.jsonerror) : [
-      m('h5', 'share link [app&query&store]'),
-      m('a',  {
-        href: self.location.href
-      }, self.location.href.slice(0, 60), '...'),
       m('h5', 'dokuwiki embed code [query only]'),
       m('pre', `{{gem/${hs.get()?.a}?0=${encode(wrapper?.query)}}}`),
       m('h5', 'json'),
-      m('pre',
+      m('pre'+b`overflow: auto`,
         stringify(hs.get(),null, '  ')
       )
     ]
