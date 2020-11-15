@@ -3,6 +3,7 @@ import b from "/vendor/bss.js";
 import box from "/component/box.js";
 import {col} from "/core/utils.js";
 
+const limit = 5000;
 
 const app = ({query, store, info}) => {
 
@@ -21,10 +22,10 @@ const app = ({query, store, info}) => {
 	let sort = (a,b) => {
 		let c = count(); return c[b]-c[a]
 	}
-	let value = m.stream.merge([store, query]).map(([store, query])=> {
-		if (store) return store.text || '';
-		if (query.text) return query.text || '';
-		else return '';
+
+	let value = m.stream.merge([store, query]).map(([s, q])=> {
+		let text = s?.text ?? q?.text ?? ''
+		return text
 	})
 	let stripwhitespace = m.stream(false)
 	let lowercase = m.stream(false)
@@ -59,7 +60,9 @@ const app = ({query, store, info}) => {
 			}), ' lowercase ', ),
 
 		m('span'+b`p 0 .5ex;`, ' ' ),
-		m(`span`+b`p 0 0.5ex; bc goldenrod; c white; br 0.5ex; cursor: pointer`, {
+		//m(`span`+b`p 0 0.5ex; bc goldenrod; c white; br 0.5ex; cursor: pointer`, {
+    m('button', {
+      disabled: store()?.text == undefined || store()?.text == query()?.text,
 			onclick: () => {
 				store(undefined);
 				info(undefined)
@@ -73,7 +76,7 @@ const app = ({query, store, info}) => {
 		view: () => m(box, {
 			icon: app.icon + 'Häufigkeitsverteilung',
 			tools: tools(),
-			sub:  (value()||'').length+ ''
+			sub:  value().length + '/' + (query()?.limit||limit)
 		}, m('div'+b`d flex; fd column`,
 
 			m('input'+b``, {
@@ -100,7 +103,6 @@ const app = ({query, store, info}) => {
 							count()[k]/length() < 0.001 ? '<1‰' : (100*count()[k]/length()).toFixed(1)+'%'
 
 						),
-
 						m('text[text-anchor=middle]', {x: 1.5*D+i*D, y: H-0.45*D}, k),
 						m('text[text-anchor=middle]'+b`ff monospace; c purple; fs 50% `, {x: 1.5*D+i*D, y: H-0.1*D}, 'U+'+k.codePointAt(0).toString(16)),
 					])
