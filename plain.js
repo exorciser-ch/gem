@@ -8,7 +8,7 @@ const limit = 5000;
 
 export const plain = ({query, store, info}) => {
 
-	const enabled = () => store() && query() && store().text != query().text;
+	const enabled = () => store()?.text != query()?.text;
 
 	const tools = () => [
 		m(`button`, {//+b`p 0 0.5ex; m 0.2ex; bc goldenrod; c white; br 0.5ex; cursor: pointer`, {
@@ -19,7 +19,7 @@ export const plain = ({query, store, info}) => {
 
 	const value = m.stream.merge([store, query]).map(([s,q])=> {
 	  let text = s?.text ?? q?.text ?? ''
-		return text.substr(0, q.limit ?? limit)
+		return text.substr(0, q?.limit ?? limit)
 	})
 
 	const i = store.map(v => {
@@ -37,7 +37,7 @@ export const plain = ({query, store, info}) => {
 	return { view: () => m(box, {
 			style: b.display('flex').flexDirection('column').style,
 			icon: i() && i().icn ||  plain.icon,
-			sub: (value() && (value().length+'/'+ (query()&&query().limit || limit))) || '🚫',
+			sub: (value() && (value().length+'/'+ (query()?.limit ?? limit))) || '🚫',
 			tools: tools()
 		},
 		m('textarea'+b`font-family: monospace; flex-grow: 1; border: none`, {
@@ -53,7 +53,7 @@ export const plain = ({query, store, info}) => {
                 });
 			},
 			oninput: ({target: t}) =>  {
-				store({text: t.value.substr(0, query().limit || limit)});
+				store({text: t.value.substr(0, query()?.limit || limit)});
 			}
 		})
 	)}
