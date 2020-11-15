@@ -15,8 +15,8 @@ hs.on = () => {
     hs.put({a: self.location.hash.slice(1)})
   }
   wrapper.store = hs.get()?.s
-  wrapper.query = hs.get()?.q
-  runtime.query = stringify(hs.get()?.q, null, '  ')
+  wrapper.query = parse(hs.get()?.q)
+  //runtime.query = stringify(hs.get()?.q, null, '  ')
 }
 
 const index = {
@@ -41,28 +41,30 @@ const index = {
     m('h5', 'Config'),
     m('ace-editor', {
       mode: 'ace/mode/json',
-      value: runtime?.query ?? stringify(hs.get()?.q, null, '  '),
+      value: hs.get()?.q, // runtime?.query ?? stringify(hs.get()?.q, null, '  '),
       onchange: ({target}) => {
         try {
+          runtime.jsonerror = undefined
           if (target.tagName!='ACE-EDITOR') return
-          runtime.query = target.value
+          hs.put({q: target.value})
           wrapper.query = parse(target.value)
-          hs.put({q: wrapper.query})
         } catch(ex) {
-          //warn(ex.message)
+          runtime.jsonerror = ex.message
         }
       },
     }),
-    m('h5', 'share link [app&query&store]'),
-    m('a',  {
-      href: self.location.href
-    }, self.location.href.slice(0, 60), '...'),
-    m('h5', 'dokuwiki embed code [query only]'),
-    m('pre', `{{gem/${hs.get()?.a}?0=${encode(hs.get()?.q)}}}`),
-    m('h5', 'json'),
-    m('pre',
-      stringify(hs.get(),null, '  ')
-    )
+    runtime.jsonerror ? m('pre'+b`c red; bc #fdd`, runtime.jsonerror) : [
+      m('h5', 'share link [app&query&store]'),
+      m('a',  {
+        href: self.location.href
+      }, self.location.href.slice(0, 60), '...'),
+      m('h5', 'dokuwiki embed code [query only]'),
+      m('pre', `{{gem/${hs.get()?.a}?0=${encode(wrapper?.query)}}}`),
+      m('h5', 'json'),
+      m('pre',
+        stringify(hs.get(),null, '  ')
+      )
+    ]
   )
 }
 

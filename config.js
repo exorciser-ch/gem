@@ -1,4 +1,4 @@
-import m from "/vendor/mithril.js";
+﻿import m from "/vendor/mithril.js";
 import b from "/vendor/bss.js";
 import lz from "/vendor/lzstring.js";
 import box from "/component/box.js";
@@ -32,7 +32,7 @@ export default ({query, store, context}) => {
 	let conf = query;
 
     let app = m.stream();
-
+    
 	conf.map( v =>  {
 		let url = `./${v.app}.js`
 		import(url).then(a=> {
@@ -66,7 +66,7 @@ export default ({query, store, context}) => {
 		return v;
 	});
 	const enc2 = remoteConf.map(v => m.buildQueryString(v));
-
+	
 	const enc3 = () => lz.compressToEncodedURIComponent(JSON.stringify({q: remoteConf(),s: remoteStore()}));
 
 	// actions
@@ -136,7 +136,7 @@ export default ({query, store, context}) => {
 			m('dd'+b`padding-bottom: 1ex`, m('div', {
 				//value: input(),
 				oncreate: ({dom}) => {
-
+				
 					dom.style.height ='1em'
 					ace(dom, {
 						mode: "ace/mode/json",
@@ -144,7 +144,7 @@ export default ({query, store, context}) => {
 						minLines: 2,
 						maxLines: Infinity,
 						tabSize: 2,
-						useSoftTabs: true
+						useSoftTabs: true 
 					}).then(e => {
 						dom.style.border = 'none'
 						editor = e
@@ -156,7 +156,7 @@ export default ({query, store, context}) => {
 			})),
 			m('dd'+b`padding-bottom: 1ex`, app() ? options((app().options), actions.patchOption) : ''),
 			app() && app().persistent && [
-				m('dt', 'Store ',
+				m('dt', 'Store ', 
 					(app() && app().presets) && button(actions.copyStoreToInput, '📑'),
 					button(actions.resetStore, 'reset'),
 				),
