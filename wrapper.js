@@ -23,7 +23,7 @@ const
     try {
       msg(elem, `Loading '${elem.app}'-app ...`, '#00f', '#eef')
 
-      const fac = (await import(`/app/${elem.app}.js`)).default
+      const fac = (await import(`./${elem.app}.js`)).default
       m.mount(elem, fac(streams.get(elem)))
     } catch (ex) {
       msg(elem, `Sorry '${elem.app}' isn't available. ${ex.message}`, 'red', '#fee')
