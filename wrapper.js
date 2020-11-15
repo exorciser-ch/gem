@@ -80,6 +80,7 @@ export default class GemWrapper extends HTMLElement {
   // non refelcted properties
 
   set query (value) {
+    console.log('set new query', value)
     streams.get(this).query(value)
     m.redraw()
   }
