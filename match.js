@@ -8,7 +8,7 @@ import {col, levenshtein} from "/core/utils.js";
 const OK = '✅'
 const FAIL = '❌'
 const app = ({query, store, info}) => {
-	
+
 	let answer = '',
 	    limit = app.limit,
 	    disabled = false,
@@ -25,7 +25,7 @@ const app = ({query, store, info}) => {
 	    answer = s?.text ?? q?.text ?? ''
 	    limit = q?.limit ?? app.limit
 	    disabled = (answer||'') == (q?.text ?? '')
-        stripped = answer.replace(RegExp(q?.strip??'', q?.stripflags??'g'), 
+        stripped = answer.replace(RegExp(q?.strip??'', q?.stripflags??'g'),
         (...g) => {
             let i = 1, rep = '';
             while ( !Number.isInteger(g[i]) && i<5000) rep += g[i++]||''
@@ -34,17 +34,17 @@ const app = ({query, store, info}) => {
         valid = !!stripped.match(RegExp(q?.regexp??'', q?.flags??''))
         steps = (!valid && q?.target) ? levenshtein(stripped, q.target) : 0
         mood = [..."🤨😯😕😬😓😰😵😨😲😱🤯"][Math.ceil(steps/2)]||'🤬'
-        
+
         s && info({
-            icn: app.icon, 
+            icn: app.icon,
             col: disabled?'#ddd':valid?'#0f0':'#f00',
             sub: disabled?'':valid
                  ? OK : q.target ? mood : FAIL
         })
     } catch (e) {
         warning = e.message
-	}}) 
-	   
+	}})
+
 
 	return { view: () =>  m(box, {
 	    icon: app.icon,
@@ -52,13 +52,13 @@ const app = ({query, store, info}) => {
 	        m('button', {
 	            disabled,
 	            onclick: () => store({})
-	        }, 'reset')     
+	        }, 'reset')
 	    ],
 	    sub: disabled ? '' :
 	        valid ? OK:
 	        query()?.target ? (mood + ' '+ steps + ` edit${steps>1?'s':''} to 🏁` ):FAIL
 	},
-	m('div'+b`d flex; fd column`, 
+	m('div'+b`d flex; fd column`,
 		m('textarea'+b`box-sizing: border-box;border: none;font-family: monospace;
 		bc ${disabled?'white':valid?'#dfd':'#fdd'}
 		`, {
@@ -92,10 +92,11 @@ const app = ({query, store, info}) => {
 };
 
 Object.assign(app, {
+		meta: {share: true},
     presets: true,
     persistent: true,
     icon: "✍",
-    limit: 5000, 
+    limit: 5000,
     options: [
 	    {a: 'text', t: 'string', r: false, d: "", c: 'Text Preset' },
 		{a: 'limit', t: 'number', r: false, d: 5000, c: 'maximum text size' },
@@ -105,9 +106,9 @@ Object.assign(app, {
     	{a: 'stripflags', t: 'string', r: false, d: "g", c: 'strip regexp flag' },
     	{a: 'target', t: 'string', r: false, d: "", c: 'the better answer' },
     	{a: 'debug', t: 'boolean', r: false, d: false, c: 'debug mode' },
-    	
-    	
+
+
 	]
 })
-	
+
 export default app;
