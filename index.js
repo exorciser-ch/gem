@@ -1,45 +1,46 @@
-import f from 'https://miruku.li/core/fragment.js'
 import m from '/vendor/mithril.js'
+import b from '/vendor/bss.js'
+import hs from './hashstore.js?verbose'
+import w from './wrapper.js'
 
-import app from './plain.js'
+const {log} = console,
+  { stringify} = JSON
 
-//import {queryParam} from 'https://miruku.li/core/utils.js'
 
-const {stringify} = JSON,
-  {log} = console,
-  deepEqual = (a,b) => stringify(a)==stringify(b)
+let wrapper, runtime = {}, hash
 
-let store = m.stream(), query = m.stream(), info = m.stream()
+//https://unpkg.com/ace-custom-element
 
-store.map(s => {
-  log('store.map')
-  f.put({s})
-  m.redraw()
-})
-
-f.on = () => {
-  log('f.on')
-  store(f.get()?.s)
-  m.redraw()
+hs.on = () => {
+  if (!hs.get()) {
+    log('a')
+    hs.put({a: self.location.hash.slice(1)})
+  } log('b')
+  wrapper.store = hs.get()?.s
 }
-
 
 const index = {
   oninit: () => {
-    const a = self.location.hash.slice(1)
-    if (a.match(/^[a-z]/)) {
-        log('init f with',  {a})
-        f.update(()=>({ a }))
+    if (!hs.get()) {
+      hs.put({a: self.location.hash.slice(1)})
     }
   },
   view: () => m('div',
-    m('div', {
-        oncreate: ({dom}) => {
-          m.mount(dom, app({store,query, info}))
-        }
-    }, 'host' ),
-    m('pre', stringify(f.get(), null, '  '))
+    'menu',
+    m('gem-wrapper', {
+      oncreate({dom}) {
+        wrapper = dom
+        wrapper.store = hs.get()?.s
+      },
+      ['oninner-change']: ({target}) => hs.put({s: target.store}),
+      app: hs.get()?.a
+    }),
+    m('pre',
+      stringify(hs.get(),null, '  ')
+    )
   )
 }
 
 m.mount(document.body, index)
+
+//setTimeout(()=>document.body.innerHTML = '1', 100)
