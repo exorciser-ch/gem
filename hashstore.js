@@ -4,6 +4,8 @@ import merge from '/vendor/mergerino.js'
 const encode = a=> LZString.compressToEncodedURIComponent(JSON.stringify(a)),
   decode = a => { try { return JSON.parse(LZString.decompressFromEncodedURIComponent(a)) } catch(ex) {	} };
 
+export {encode, decode}
+
 const queryParam = (url, param, defaultValue) => {
   url = new URL(url)
   let searchParams = new URLSearchParams(url.search)

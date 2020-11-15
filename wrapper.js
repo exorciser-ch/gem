@@ -22,6 +22,7 @@ const
     if (!elem.app) return msg(elem, `<gem-wrapper> app-attribute required`, '#f0f', '#fef')
     try {
       msg(elem, `Loading '${elem.app}'-app ...`, '#00f', '#eef')
+
       const fac = (await import(`/app/${elem.app}.js`)).default
       m.mount(elem, fac(streams.get(elem)))
     } catch (ex) {
@@ -45,7 +46,7 @@ export default class GemWrapper extends HTMLElement {
       const v = values.get(this)
       if (!deepEqual(v.store,s)) {
         v.store = s
-        dispatch(this, 'inner-change')
+        dispatch(this, 'change')
         /*
         The INPUT event fires when some value has been changed BY THE USER.
 
@@ -81,6 +82,9 @@ export default class GemWrapper extends HTMLElement {
   set query (value) {
     streams.get(this).query(value)
     m.redraw()
+  }
+  get query () {
+    return streams.get(this).query()
   }
   set store (value) {
     values.get(this).store = value
