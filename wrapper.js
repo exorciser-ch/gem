@@ -92,6 +92,9 @@ export default class GemWrapper extends HTMLElement {
   get store () {
     return streams.get(this).store()
   }
+  get info() {
+    return streams.get(this).info()
+  }
 
 }
 

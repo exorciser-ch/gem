@@ -24,6 +24,8 @@ hs.on = () => {
   }
 }
 
+let info
+
 const index = {
   oninit: () => {
     if (!hs.get()) {
@@ -33,7 +35,14 @@ const index = {
   view: () => m('div', {
     run: document.title = hs.get()?.a+ '@'+ self.location.host
   },
-    m('h5', 'App'),
+    m('div'+b`d flex; margin: 1em 0 1ex 0`,
+    m('span'+b`fw bold; fg 1`, 'App'),
+    (info = wrapper?.info) && [
+      m('span'+b`border-radius: 0.25ex;border: 1px solid ${info.col}; `, info.icn,
+        m('sub', info.sub)
+      )
+    ]
+  ),
     m('gem-wrapper', {
       oncreate({dom}) {
         wrapper = dom
@@ -50,8 +59,25 @@ const index = {
       },
       app: hs.get()?.a
     }),
-    m('h5', 'Config'),
+    m('div'+b`d flex; margin: 1em 0 1ex 0`,
+      m('span'+b`fw bold; fg 1`, 'Config'),
+      m('button', {
+        onclick: () => {try {
+          let q = hs.get().q
+          q = stringify(parse(q), null, '  ')
+          hs.put({q})
+          runtime.config.value = q
+        } catch (ex) {
+          warn(ex.message)
+        } }
+      },'format'),
+      m('span'+b`w 1em`, ' '),
+      m('button', {
+        onclick: () => hs.put({q: ''})
+      },'reset')
+    ),
     m('ace-editor', {
+      oncreate: ({dom}) => runtime.config = dom,
       mode: 'ace/mode/json',
       value: hs.get()?.q, // runtime?.query ?? stringify(hs.get()?.q, null, '  '),
       onchange: ({target}) => {
