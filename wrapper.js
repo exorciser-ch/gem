@@ -2,7 +2,6 @@ import m from '/vendor/mithril.js'
 import b from '/vendor/bss.js'
 
 const
-  {log} = console,
   {stringify} = JSON,
   deepEqual = (a,b) => stringify(a)==stringify(b),
 
@@ -79,7 +78,6 @@ export default class GemWrapper extends HTMLElement {
   // non refelcted properties
 
   set query (value) {
-    console.log('set new query', value)
     streams.get(this).query(value)
     m.redraw()
   }

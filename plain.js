@@ -8,21 +8,18 @@ const limit = 5000;
 
 export const plain = ({query, store, info}) => {
 
-	// is reset enabled?
 	const enabled = () => store() && query() && store().text != query().text;
 
 	const tools = () => [
-		m(`span`+b`p 0 0.5ex; m 0.2ex; bc goldenrod; c white; br 0.5ex; cursor: pointer`, {
+		m(`button`, {//+b`p 0 0.5ex; m 0.2ex; bc goldenrod; c white; br 0.5ex; cursor: pointer`, {
 			disabled: !enabled(),
 			onclick: () => { store(undefined); info(undefined) }
 		},'reset')
 	]
 
 	const value = m.stream.merge([store, query]).map(([s,q])=> {
-	    let text = s && s.text
-	    if (text==undefined) text = q.text || '';
-	    text = typeof text == "string" ? text : ''
-		return text.substr(0, q.limit || limit)
+	  let text = s?.text ?? q?.text ?? ''
+		return text.substr(0, q.limit ?? limit)
 	})
 
 	const i = store.map(v => {
@@ -45,7 +42,6 @@ export const plain = ({query, store, info}) => {
 		},
 		m('textarea'+b`font-family: monospace; flex-grow: 1; border: none`, {
 			value: value(),
-			//onupdate: ({dom}) => fitToContent(dom),
 			oncreate: ({dom}) => {
 			    var offset = dom.offsetHeight - dom.clientHeight + 3;
 			    dom.style['box-sizing'] = 'border-box';
@@ -58,7 +54,6 @@ export const plain = ({query, store, info}) => {
 			},
 			oninput: ({target: t}) =>  {
 				store({text: t.value.substr(0, query().limit || limit)});
-				//fitToContent(t)
 			}
 		})
 	)}
