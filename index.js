@@ -10,6 +10,8 @@ const {log, warn} = console,
 
 let wrapper, runtime = {}
 
+document.title = 'apps@'+self.location.host
+
 hs.on = () => {
   if (!hs.get()) {
     hs.put({a: self.location.hash.slice(1)})
@@ -25,7 +27,9 @@ const index = {
       hs.put({a: self.location.hash.slice(1)})
     }
   },
-  view: () => m('div',
+  view: () => m('div', {
+    run: document.title = hs.get()?.a+ '@'+ self.location.host
+  },
     m('h5', 'App'),
     m('gem-wrapper', {
       oncreate({dom}) {
