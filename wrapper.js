@@ -22,7 +22,6 @@ const
     if (!elem.app) return msg(elem, `<gem-wrapper> app-attribute required`, '#f0f', '#fef')
     try {
       msg(elem, `Loading '${elem.app}'-app ...`, '#00f', '#eef')
-
       const fac = (await import(`./${elem.app}.js`)).default
       m.mount(elem, fac(streams.get(elem)))
     } catch (ex) {
