@@ -48,12 +48,12 @@ export const app = ({
 		col = s?.col
 		sub = s?.sub
 		results = s?.results
-		if (!js) {
+		if (s === false ) {
 			info({ icn: '🧫', col: color.unset})
-		} else {
+		} else if (js) {
 		    info({ icn: '🧫', col, sub})
 		}
-        m.redraw()
+    m.redraw()
 	})
 
 	function check() {
