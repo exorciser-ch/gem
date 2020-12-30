@@ -61,8 +61,8 @@ const app = ({
           icon: app.icon,
         },
         [
-          (access("correct") > 0 ? m("div" + b`mt: 20px; mb: 30px; ta: center;`, `korrekt gelöste Aufgaben: ${access("correct")}`) : null),
-          m("div" + b`display: flex; align-items: center; justify-content: center; width: 100%; mb: 20px;`,
+          (access("correct") > 0 ? m("div" + b`mt: 20px; ta: center;`, `korrekt gelöste Aufgaben: ${access("correct")}`) : null),
+          m("div" + b`mt: 30px; display: flex; align-items: center; justify-content: center; width: 100%; mb: 20px;`,
           m("div" + b `d flex; fd: row;`,
             m("div" + b `font-size: 30px;`, access("bin")),
             m("div" + b `mt: 22px; font-size: 15px;`, "2"),
