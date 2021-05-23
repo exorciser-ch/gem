@@ -2,6 +2,8 @@ import m from "/vendor/mithril.js";
 import b from "/vendor/bss.js";
 import Quill from "/vendor/quill.js";
 
+const {stringify} = JSON, 
+	cmp = (a,b) => stringify(a) === stringify(b)
 // own
 import box from "/component/box.js";
 import {col} from "/core/utils.js";
@@ -13,12 +15,14 @@ const app = ({query, store, info}) => {
 	};
 
 
-	let last = 0 , quill
+	let last = 0,  quill
 
 	store.map(state => {
-    console.log('quill state updated', state)
-	    if (state?.timestamp != last) {
-	       quill?.setContents(state, 'silent')
+		if (state?.timestamp) {
+			delete state.timestamp
+		}
+		if (!cmp(state, quill?.getContents())) {
+		   quill?.setContents(state, 'silent')
 	    } else {
 		    state && info({
 		       icn: app.icon,
@@ -54,7 +58,7 @@ const app = ({query, store, info}) => {
             }
           source!='silent' && store( {
               ...quill.getContents(),
-              timestamp: last = Date.now()
+             // timestamp: last = Date.now()
           })
           m.redraw()
         })
