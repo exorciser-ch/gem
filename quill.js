@@ -1,33 +1,34 @@
 import m from "/vendor/mithril.js";
 import b from "/vendor/bss.js";
 import Quill from "/vendor/quill.js";
-   
+
 // own
 import box from "/component/box.js";
 import {col} from "/core/utils.js";
 
 const app = ({query, store, info}) => {
-    
+
 	const value = () => {
 	    if (typeof store() == 'object') return store();
 	};
-	
+
 
 	let last = 0 , quill
-	
+
 	store.map(state => {
+    console.log('quill state updated', state)
 	    if (state?.timestamp != last) {
 	       quill?.setContents(state, 'silent')
 	    } else {
 		    state && info({
 		       icn: app.icon,
 		       sub: quill.getLength()-1,
-		       col: col.unset 
+		       col: col.unset
 		    })
 	    }
 	})
 	let limit =10000;
-	let init = ({dom}) => { 
+	let init = ({dom}) => {
 	    quill = new Quill(dom, {
           modules: {
            //   syntax: true,
@@ -36,11 +37,11 @@ const app = ({query, store, info}) => {
               ['bold', 'italic', 'underline'],
                [{ 'script': 'sub'}, { 'script': 'super' }],
                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-               [{ 'indent': '-1'}, { 'indent': '+1' }], 
+               [{ 'indent': '-1'}, { 'indent': '+1' }],
                [{ 'color': [] }, { 'background': [] }],
               [ 'code-block'],
-              ['clean'] 
-              
+              ['clean']
+
             ]
           },
           placeholder: 'Notizen ...',
@@ -57,18 +58,18 @@ const app = ({query, store, info}) => {
           })
           m.redraw()
         })
- 
+
 	}
-	
-	
-	return {  
-		view: () => m(box, 
-    		m('div'+b`float right; fs 70%;`, 
+
+
+	return {
+		view: () => m(box,
+    		m('div'+b`float right; fs 70%;`,
     		quill?.getLength()-1+'/10K'),
     		m('div'+b`bc white`, {
     			oncreate: init
     		}),
-    		
+
 	    )
 	};
 };
@@ -79,5 +80,5 @@ app.icon = "🖋️";
 app.options = [
 	{a: 'text', t: 'string', r: false, d: "", c: 'Text Preset' },
 ];
-	
+
 export default app;
